@@ -226,11 +226,14 @@ jobs:
           du -h --max-depth=1 ./build_dir
           du -h --max-depth=1 ./bin
 
-      - name: Prepare artifact
-        run: find ./bin/targets/ -type d -name "packages" | xargs rm -rf {}
-
-      - name: Upload artifact
+      - name: Upload firmware
         uses: actions/upload-artifact@master
         with:
-          name: OpenWrt For R619AC %Y.%m.%d
+          name: OpenWrt For R619AC
           path: ./bin/targets/ipq40xx/generic
+
+      - name: Deliver package
+        uses: actions/upload-artifact@master
+        with:
+          name: OpenWrt R619AC Package
+          path: ./artifact/package/
