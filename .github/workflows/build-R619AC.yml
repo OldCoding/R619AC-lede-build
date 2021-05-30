@@ -237,4 +237,4 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: OpenWrt R619AC Package
-          path: ./artifact/package/
+          path: ./bin/packages/
