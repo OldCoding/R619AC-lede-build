@@ -216,6 +216,7 @@ jobs:
 
       - name: Compile firmware
         run: |
+          echo -e "$(nproc) Core Build."
           make -j$(nproc) || make -j1 V=s
           echo "======================="
           echo "Space usage:"
