@@ -50,10 +50,10 @@ jobs:
       - name: Clone Lede
         run: |
           git clone https://github.com/coolsnowwolf/lede openwrt
+          mv -rf openwrt/* ./
 
       - name: FilePatch
         run: |
-          cd openwrt
           sed -i "s/OpenWrt /Leopard build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
           sed '10 iuci\ set\ network.lan.ipaddr=192.168.10.1' -i package/lean/default-settings/files/zzz-default-settings
           sed '11 iuci\ commit\ network' -i package/lean/default-settings/files/zzz-default-settings
@@ -61,7 +61,7 @@ jobs:
 
       - name: Update packages
         run: |
-          cd openwrt/package
+          cd package
           mkdir openwrt-packages
           cd openwrt-packages
           git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
@@ -76,13 +76,11 @@ jobs:
 
       - name: Update feeds
         run: |
-          cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: Generate configuration file
         run: |
-          cd openwrt
           rm -f ./.config*
           touch ./.config
 
@@ -211,13 +209,11 @@ jobs:
 
       - name: Make download
         run: |
-          cd openwrt
           make download -j8
           find dl -size -1024c -exec rm -f {} \;
 
       - name: Compile firmware
         run: |
-          cd openwrt
           make -j$(nproc) || make -j1 V=s
           echo "======================="
           echo "Space usage:"
