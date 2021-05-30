@@ -50,7 +50,7 @@ jobs:
       - name: Clone Lede
         run: |
           git clone https://github.com/coolsnowwolf/lede openwrt
-          mv -rf openwrt/* ./
+          mv openwrt/* .
 
       - name: FilePatch
         run: |
