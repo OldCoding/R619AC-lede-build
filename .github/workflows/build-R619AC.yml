@@ -51,6 +51,7 @@ jobs:
         run: |
           git clone https://github.com/coolsnowwolf/lede openwrt
           mv openwrt/* .
+          rm -rf openwrt
 
       - name: FilePatch
         run: |
