@@ -58,9 +58,9 @@ jobs:
           mkdir -p files/etc/config && curl -L https://destan19.github.io/assets/oaf/feature/feature.cfg -o files/etc/config/feature.cfg
           ls files/etc/config
           sed -i "s/OpenWrt /Wing build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
-          sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
           sed '10 iuci\ set\ network.lan.ipaddr=192.168.10.1' -i package/lean/default-settings/files/zzz-default-settings
           sed '11 iuci\ commit\ network' -i package/lean/default-settings/files/zzz-default-settings
+          sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
           sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
 
       - name: Update packages
