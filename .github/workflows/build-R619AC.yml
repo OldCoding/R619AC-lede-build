@@ -216,15 +216,11 @@ jobs:
           # ========================固件定制部分结束========================
           # 
 
+          cat ./.config
           sed -i 's/^[ \t]*//g' ./.config
           make defconfig
           mkdir conf && cp ./.config ./conf
-          
-      - name: Upload Config
-        uses: actions/upload-artifact@master
-        with:
-          name: OpenWrt For R619AC
-          path: ./conf
+          cat ./.config
 
       - name: Make download
         run: |
