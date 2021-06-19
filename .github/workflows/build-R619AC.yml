@@ -258,7 +258,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: OpenWrt For R619AC
-          path: ./bin/targets/
+          path: ./bin/targets/ipq40xx/generic
 
       - name: Deliver package
         uses: actions/upload-artifact@master
