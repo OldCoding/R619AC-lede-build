@@ -7,7 +7,7 @@
 # <https://github.com/KFERMercer/OpenWrt-CI>
 #
 
-name: OpenWrt-R619AC
+name: OpenWrt-R619AC-Test
 
 on:
   # push:
