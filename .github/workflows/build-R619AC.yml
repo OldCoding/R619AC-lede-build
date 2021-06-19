@@ -216,11 +216,8 @@ jobs:
           # ========================固件定制部分结束========================
           # 
 
-          cat ./.config
           sed -i 's/^[ \t]*//g' ./.config
           make defconfig
-          mkdir conf && cp ./.config ./conf
-          cat ./.config
 
       - name: Make download
         run: |
@@ -240,14 +237,31 @@ jobs:
           du -h --max-depth=1 ./build_dir
           du -h --max-depth=1 ./bin
 
+      - name: Prepare artifact
+        run: |
+          mkdir -p ./artifact/firmware
+          mkdir -p ./artifact/package
+          mkdir -p ./artifact/buildinfo
+          rm -rf $(find ./bin/targets/ -type d -name "packages")
+          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
+          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+          cp -rf ./.config ./artifact/buildinfo/
+
+      - name: Deliver buildinfo
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_buildinfo
+          path: ./artifact/buildinfo/
+
       - name: Upload firmware
         uses: actions/upload-artifact@master
         with:
           name: OpenWrt For R619AC
-          path: ./bin/targets/ipq40xx/generic
+          path: ./bin/targets/
 
       - name: Deliver package
         uses: actions/upload-artifact@master
         with:
           name: OpenWrt R619AC Package
-          path: ./bin/packages/
+          path: ./artifact/package/
