@@ -49,7 +49,7 @@ jobs:
 
       - name: Clone Lede
         run: |
-          git clone https://github.com/coolsnowwolf/lede openwrt
+          git clone https://github.com/OldCoding/lede openwrt
           mv openwrt/* .
           rm -rf openwrt
 
