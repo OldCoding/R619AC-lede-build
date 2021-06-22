@@ -129,90 +129,12 @@ jobs:
           CONFIG_TARGET_ipq40xx_generic_DEVICE_p2w_r619ac-128m=y
           EOF
 
-          # USB2.0支持:
-          # cat >> .config <<EOF
-          # CONFIG_PACKAGE_kmod-usb-core=y
-          # CONFIG_PACKAGE_kmod-usb-printer=y
-          # CONFIG_PACKAGE_kmod-usb-storage=y
-          # CONFIG_PACKAGE_kmod-usb-storage-extras=y
-          # CONFIG_PACKAGE_kmod-usb-storage-uas=y
-          # CONFIG_PACKAGE_kmod-usb-uhci=y
-          # CONFIG_PACKAGE_kmod-usb2=y
-          # CONFIG_PACKAGE_kmod-usb2-pci=y
-          # EOF
-
           # IPv6支持:
           cat >> .config <<EOF
           CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
           CONFIG_PACKAGE_ip6tables=y
           CONFIG_PACKAGE_ipv6helper=y
           EOF
-
-          # LuCI插件选择:
-          cat >> .config <<EOF
-          CONFIG_PACKAGE_luci-app-autoreboot=y
-          CONFIG_PACKAGE_luci-app-ddns=y
-          CONFIG_PACKAGE_luci-app-filetransfer=y
-          CONFIG_PACKAGE_luci-app-speedlimit=y
-          # CONFIG_PACKAGE_luci-app-eqos=y
-          # CONFIG_PACKAGE_luci-app-nft-qos is not set
-          CONFIG_PACKAGE_luci-app-nlbwmon=y
-          CONFIG_PACKAGE_luci-app-firewall=y
-          CONFIG_PACKAGE_luci-app-sfe=y
-          CONFIG_PACKAGE_luci-app-adbyby-plus=y
-          CONFIG_PACKAGE_luci-app-ssr-plus=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_plugin=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray=y
-          CONFIG_PACKAGE_luci-app-serverchan=y
-          CONFIG_PACKAGE_luci-app-v2ray-server=y
-          CONFIG_PACKAGE_smartdns=y
-          CONFIG_PACKAGE_luci-app-smartdns=y
-          CONFIG_PACKAGE_luci-app-oaf=y
-          CONFIG_PACKAGE_luci-app-samba=y
-          CONFIG_PACKAGE_luci-app-ttyd=y
-          CONFIG_PACKAGE_luci-app-webadmin=y
-          CONFIG_PACKAGE_luci-app-wol=y
-          CONFIG_PACKAGE_luci-app-wrtbwmon=y
-          CONFIG_PACKAGE_luci-app-ramfree=y
-          CONFIG_PACKAGE_luci-app-frpc=y
-          CONFIG_PACKAGE_luci-app-unblockmusic=y
-          CONFIG_PACKAGE_luci-app-usb-printer=y
-          CONFIG_PACKAGE_luci-app-upnp=y
-          CONFIG_PACKAGE_luci-app-vsftpd=y
-          CONFIG_PACKAGE_luci-app-vlmcsd=y
-          CONFIG_PACKAGE_luci-app-zerotier=y
-          CONFIG_PACKAGE_luci-app-openclash=y
-          CONFIG_PACKAGE_luci-app-passwall=y
-          CONFIG_PACKAGE_luci-app-adguardhome=y
-          CONFIG_PACKAGE_luci-app-cpufreq=y
-          EOF
-
-          # LuCI主题:
-          cat >> .config <<EOF
-          CONFIG_PACKAGE_luci-theme-argon=y
-          CONFIG_PACKAGE_luci-theme-bootstrap=y
-          CONFIG_PACKAGE_luci-theme-material=y
-          # CONFIG_PACKAGE_luci-theme-rosy=y
-          EOF
-
-          # 常用软件包:
-          cat >> .config <<EOF
-          CONFIG_DEFAULT_coremark=y
-          CONFIG_PACKAGE_lm-sensors=y
-          CONFIG_PACKAGE_tc=y
-          CONFIG_PACKAGE_kmod-ifb=y
-          CONFIG_PACKAGE_kmod-sched=y
-          CONFIG_PACKAGE_kmod-sched-core=y
-          EOF
-
-          # 取消编译VMware镜像以及镜像填充 (不要删除被缩进的注释符号):
-          # cat >> .config <<EOF
-          # # CONFIG_TARGET_IMAGES_PAD is not set
-          # # CONFIG_VMDK_IMAGES is not set
-          # EOF
 
           # 
           # ========================固件定制部分结束========================
