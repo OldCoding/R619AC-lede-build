@@ -55,7 +55,7 @@ jobs:
 
       - name: FilePatch
         run: |
-          mkdir -p files/etc/appfilter && curl -L https://destan19.github.io/assets/oaf/feature/feature.cfg -o files/etc/appfilter/feature.cfg
+          # mkdir -p files/etc/appfilter && curl -L https://destan19.github.io/assets/oaf/feature/feature.cfg -o files/etc/appfilter/feature.cfg
           sed -i "s/OpenWrt /Wing build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
           sed '10 iuci\ set\ network.lan.ipaddr=192.168.10.1' -i package/lean/default-settings/files/zzz-default-settings
           sed '11 iuci\ commit\ network' -i package/lean/default-settings/files/zzz-default-settings
@@ -69,17 +69,13 @@ jobs:
           cd package
           mkdir openwrt-packages
           cd openwrt-packages
-          git clone https://$SCKEY:x-oauth-basic@github.com/OldCoding/luci-app-speedlimit.git
-          git clone https://github.com/OldCoding/luci-app-eqos.git
-          git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
-          git clone https://github.com/tty228/luci-app-serverchan
-          git clone https://github.com/rosywrt/luci-theme-rosy
-          # git clone https://github.com/vernesong/OpenClash
-          git clone https://github.com/rufengsuixing/luci-app-adguardhome
-          git clone https://github.com/pymumu/smartdns
-          git clone -b lede https://github.com/pymumu/luci-app-smartdns
-          git clone https://github.com/xiaorouji/openwrt-passwall
-          git clone https://github.com/destan19/OpenAppFilter.git
+          # git clone https://$SCKEY:x-oauth-basic@github.com/OldCoding/luci-app-speedlimit.git
+          # git clone https://github.com/tty228/luci-app-serverchan
+          # git clone https://github.com/rufengsuixing/luci-app-adguardhome
+          # git clone https://github.com/pymumu/smartdns
+          # git clone -b lede https://github.com/pymumu/luci-app-smartdns
+          # git clone https://github.com/xiaorouji/openwrt-passwall
+          # git clone https://github.com/destan19/OpenAppFilter.git
 
       - name: Update feeds
         run: |
@@ -155,9 +151,6 @@ jobs:
           CONFIG_PACKAGE_luci-app-autoreboot=y
           CONFIG_PACKAGE_luci-app-ddns=y
           CONFIG_PACKAGE_luci-app-filetransfer=y
-          CONFIG_PACKAGE_luci-app-speedlimit=y
-          # CONFIG_PACKAGE_luci-app-eqos=y
-          # CONFIG_PACKAGE_luci-app-nft-qos is not set
           CONFIG_PACKAGE_luci-app-nlbwmon=y
           CONFIG_PACKAGE_luci-app-firewall=y
           CONFIG_PACKAGE_luci-app-sfe=y
@@ -168,27 +161,17 @@ jobs:
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray=y
-          CONFIG_PACKAGE_luci-app-serverchan=y
           CONFIG_PACKAGE_luci-app-v2ray-server=y
-          CONFIG_PACKAGE_smartdns=y
-          CONFIG_PACKAGE_luci-app-smartdns=y
-          CONFIG_PACKAGE_luci-app-oaf=y
           CONFIG_PACKAGE_luci-app-samba=y
           CONFIG_PACKAGE_luci-app-ttyd=y
           CONFIG_PACKAGE_luci-app-webadmin=y
           CONFIG_PACKAGE_luci-app-wol=y
           CONFIG_PACKAGE_luci-app-wrtbwmon=y
           CONFIG_PACKAGE_luci-app-ramfree=y
-          CONFIG_PACKAGE_luci-app-frpc=y
-          CONFIG_PACKAGE_luci-app-unblockmusic=y
-          CONFIG_PACKAGE_luci-app-usb-printer=y
           CONFIG_PACKAGE_luci-app-upnp=y
           CONFIG_PACKAGE_luci-app-vsftpd=y
           CONFIG_PACKAGE_luci-app-vlmcsd=y
           CONFIG_PACKAGE_luci-app-zerotier=y
-          CONFIG_PACKAGE_luci-app-openclash=y
-          CONFIG_PACKAGE_luci-app-passwall=y
-          CONFIG_PACKAGE_luci-app-adguardhome=y
           CONFIG_PACKAGE_luci-app-cpufreq=y
           EOF
 
@@ -197,7 +180,6 @@ jobs:
           CONFIG_PACKAGE_luci-theme-argon=y
           CONFIG_PACKAGE_luci-theme-bootstrap=y
           CONFIG_PACKAGE_luci-theme-material=y
-          # CONFIG_PACKAGE_luci-theme-rosy=y
           EOF
 
           # 常用软件包:
