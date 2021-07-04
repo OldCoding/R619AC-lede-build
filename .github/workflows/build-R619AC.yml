@@ -189,6 +189,7 @@ jobs:
           # 常用软件包:
           cat >> .config <<EOF
           CONFIG_DEFAULT_coremark=y
+          CONFIG_PACKAGE_kmod-ifb=y
           EOF
 
           # 取消编译VMware镜像以及镜像填充 (不要删除被缩进的注释符号):
