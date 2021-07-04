@@ -60,7 +60,7 @@ jobs:
           sed '11 iuci\ commit\ network' -i package/lean/default-settings/files/zzz-default-settings
           sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
           # sed -i '$a src-git Aibx https://github.com/Aibx/openwrt-packages' feeds.conf.default
-          sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
+          sed -i '$a src-git helloworld https://github.com/fw876/helloworld' ./feeds.conf.default
 
       - name: Update packages
         env:
@@ -156,15 +156,8 @@ jobs:
           CONFIG_PACKAGE_luci-app-jd-dailybonus=y
           CONFIG_PACKAGE_luci-app-adbyby-plus=y
           CONFIG_PACKAGE_luci-app-ssr-plus=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray_plugin=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray=y
           CONFIG_PACKAGE_luci-app-serverchan=y
-          CONFIG_PACKAGE_luci-app-v2ray-server=y
           CONFIG_PACKAGE_smartdns=y
-          CONFIG_PACKAGE_smartdns-le=y
           CONFIG_PACKAGE_luci-app-smartdns=y
           CONFIG_PACKAGE_luci-app-oaf=y
           CONFIG_PACKAGE_luci-app-samba=y
