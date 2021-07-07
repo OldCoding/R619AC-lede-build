@@ -54,7 +54,7 @@ jobs:
 
       - name: FilePatch
         run: |
-          mkdir -p files/etc/appfilter && curl -L https://destan19.github.io/assets/oaf/feature/feature.cfg -o files/etc/appfilter/feature.cfg
+          mkdir -p files/etc/appfilter && curl -L https://destan19.github.io/assets/oaf/feature/feature-06-18.cfg -o files/etc/appfilter/feature.cfg
           sed -i "s/OpenWrt /Wing build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
           sed '10 iuci\ set\ network.lan.ipaddr=192.168.10.1' -i package/lean/default-settings/files/zzz-default-settings
           sed '11 iuci\ commit\ network' -i package/lean/default-settings/files/zzz-default-settings
