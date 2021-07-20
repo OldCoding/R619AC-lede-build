@@ -71,12 +71,10 @@ jobs:
         run: |
           curl -L https://destan19.github.io/assets/oaf/feature/feature-06-18.cfg -o package/openwrt-packages/OpenAppFilter/open-app-filter/files/feature.cfg
           sed -i "s/OpenWrt /Wing build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
-          sed '10 iuci\ set\ network.lan.ipaddr=192.168.10.1' -i package/lean/default-settings/files/zzz-default-settings
-          sed '11 iuci\ commit\ network' -i package/lean/default-settings/files/zzz-default-settings
           sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
           sed -i "/firewall\.user/d" package/lean/default-settings/files/zzz-default-settings
-          # sed -i '$a src-git Aibx https://github.com/Aibx/openwrt-packages' feeds.conf.default
-          sed -i '$a src-git helloworld https://github.com/fw876/helloworld' ./feeds.conf.default
+          sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
+          sed -i '$a src-git helloworld https://github.com/fw876/helloworld' feeds.conf.default
 
       - name: Update feeds
         run: |
