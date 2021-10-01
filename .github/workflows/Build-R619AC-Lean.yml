@@ -158,7 +158,6 @@ jobs:
         CONFIG_PACKAGE_luci-app-speedlimit=y
         CONFIG_PACKAGE_luci-app-nlbwmon=y
         CONFIG_PACKAGE_luci-app-firewall=y
-        CONFIG_PACKAGE_luci-app-jd-dailybonus=y
         CONFIG_PACKAGE_luci-app-adbyby-plus=y
         CONFIG_PACKAGE_luci-app-ssr-plus=y
         CONFIG_PACKAGE_luci-app-serverchan=y
@@ -172,10 +171,6 @@ jobs:
         CONFIG_PACKAGE_luci-app-wol=y
         CONFIG_PACKAGE_luci-app-wrtbwmon=y
         CONFIG_PACKAGE_luci-app-ramfree=y
-        CONFIG_PACKAGE_luci-app-frpc=y
-        CONFIG_PACKAGE_luci-app-unblockmusic=y
-        CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_Go=y
-        CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_NodeJS=y
         CONFIG_PACKAGE_luci-app-usb-printer=y
         CONFIG_PACKAGE_luci-app-upnp=y
         CONFIG_PACKAGE_luci-app-vsftpd=y
