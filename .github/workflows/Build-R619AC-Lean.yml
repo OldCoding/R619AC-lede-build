@@ -74,8 +74,8 @@ jobs:
         git clone -b lede https://github.com/pymumu/luci-app-smartdns
         git clone https://github.com/xiaorouji/openwrt-passwall
         git clone https://github.com/destan19/OpenAppFilter.git
-        git clone https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
-        git clone https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
+        svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
+        svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
 
     - name: FilePatch
       run: |
