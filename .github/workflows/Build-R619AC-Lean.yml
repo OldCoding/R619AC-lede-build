@@ -74,6 +74,8 @@ jobs:
         git clone -b lede https://github.com/pymumu/luci-app-smartdns
         git clone https://github.com/xiaorouji/openwrt-passwall
         git clone https://github.com/destan19/OpenAppFilter.git
+        git clone https://github.com/messense/aliyundrive-webdav/tree/main/openwrt/aliyundrive-webdav
+        git clone https://github.com/messense/aliyundrive-webdav/tree/main/openwrt/luci-app-aliyundrive-webdav
 
     - name: FilePatch
       run: |
@@ -152,6 +154,7 @@ jobs:
 
         # LuCI插件选择:
         cat >> .config <<EOF
+        CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
         CONFIG_PACKAGE_luci-app-autoreboot=y
         CONFIG_PACKAGE_luci-app-ddns=y
         CONFIG_PACKAGE_luci-app-filetransfer=y
