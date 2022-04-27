@@ -76,6 +76,7 @@ jobs:
         git clone https://github.com/destan19/OpenAppFilter.git
         svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
         svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
+        git clone --depth 1 https://github.com/QiuSimons/openwrt-mos && mv -n openwrt-mos/*mosdns ./ ; rm -rf openwrt-mos
 
     - name: FilePatch
       run: |
@@ -155,6 +156,7 @@ jobs:
         # LuCI插件选择:
         cat >> .config <<EOF
         CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
+        CONFIG_PACKAGE_luci-app-mosdns=y
         CONFIG_PACKAGE_luci-app-autoreboot=y
         CONFIG_PACKAGE_luci-app-ddns=y
         CONFIG_PACKAGE_luci-app-filetransfer=y
