@@ -74,8 +74,8 @@ jobs:
         git clone -b lede https://github.com/pymumu/luci-app-smartdns
         git clone https://github.com/xiaorouji/openwrt-passwall
         git clone https://github.com/destan19/OpenAppFilter.git
-        svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
-        svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
+        #svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
+        #svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
         svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
         # git clone --depth 1 https://github.com/QiuSimons/openwrt-mos && mv -n openwrt-mos/*mosdns ./ ; rm -rf openwrt-mos
 
@@ -157,6 +157,7 @@ jobs:
         # LuCI插件选择:
         cat >> .config <<EOF
         CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
+        CONFIG_PACKAGE_luci-app-rclone=y
         CONFIG_PACKAGE_luci-app-openclash=y
         CONFIG_PACKAGE_luci-app-mosdns=y
         CONFIG_PACKAGE_luci-app-autoreboot=y
@@ -169,7 +170,7 @@ jobs:
         CONFIG_PACKAGE_luci-app-ssr-plus=y
         CONFIG_PACKAGE_luci-app-serverchan=y
         CONFIG_PACKAGE_luci-app-pptp-server=y
-        CONFIG_PACKAGE_smartdns=y
+        # CONFIG_PACKAGE_smartdns is not set
         CONFIG_PACKAGE_luci-app-smartdns=y
         CONFIG_PACKAGE_luci-app-oaf=y
         CONFIG_PACKAGE_luci-app-samba=y
