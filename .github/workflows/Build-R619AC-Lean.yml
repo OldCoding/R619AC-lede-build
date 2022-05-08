@@ -157,6 +157,7 @@ jobs:
         # LuCI插件选择:
         cat >> .config <<EOF
         CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
+        CONFIG_PACKAGE_luci-app-nft-qos=y
         CONFIG_PACKAGE_luci-app-rclone=y
         CONFIG_PACKAGE_luci-app-openclash=y
         CONFIG_PACKAGE_luci-app-mosdns=y
