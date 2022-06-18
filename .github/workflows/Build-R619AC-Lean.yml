@@ -75,8 +75,6 @@ jobs:
         git clone https://github.com/xiaorouji/openwrt-passwall
         git clone https://github.com/destan19/OpenAppFilter.git
         svn export https://github.com/immortalwrt/packages/trunk/net/smartdns
-        svn export https://github.com/linkease/istore/trunk/luci/luci-app-store
-        svn export https://github.com/linkease/istore-ui/trunk/app-store-ui
         #svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
         #svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
         svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
@@ -159,8 +157,6 @@ jobs:
 
         # LuCI插件选择:
         cat >> .config <<EOF
-        CONFIG_PACKAGE_app-store-ui=y
-        CONFIG_PACKAGE_luci-app-store=y
         CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
         CONFIG_PACKAGE_luci-app-openclash=y
         CONFIG_PACKAGE_luci-app-mosdns=y
