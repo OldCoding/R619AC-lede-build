@@ -183,9 +183,11 @@ jobs:
         CONFIG_PACKAGE_luci-app-vsftpd=y
         CONFIG_PACKAGE_luci-app-vlmcsd=y
         CONFIG_PACKAGE_luci-app-zerotier=y
-        CONFIG_PACKAGE_luci-app-passwall=y
         CONFIG_PACKAGE_luci-app-adguardhome=y
         CONFIG_PACKAGE_luci-app-cpufreq=y
+        CONFIG_PACKAGE_luci-app-unblockmusic=y
+        CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_Go=y
+        CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_NodeJS=y
         EOF
 
         # LuCI主题:
