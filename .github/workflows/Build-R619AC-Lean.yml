@@ -203,6 +203,7 @@ jobs:
         # 常用软件包:
         cat >> .config <<EOF
         CONFIG_DEFAULT_coremark=y
+        CONFIG_PACKAGE_e2fsprogs=y
         # CONFIG_PACKAGE_odhcpd is not set
         EOF
 
