@@ -212,7 +212,8 @@ jobs:
         # 
         # ========================固件定制部分结束========================
         # 
-
+        
+        unzip -o -q luci-app-turboacc.zip -d ./feeds/luci/applications
         sed -i 's/^[ \t]*//g' ./.config
         make defconfig
 
