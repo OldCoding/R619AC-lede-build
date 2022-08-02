@@ -59,6 +59,12 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         mv openwrt/* . && rm -rf openwrt
 
+    - name: Cache
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        prefix: ${{ github.workspace }}/
+
     - name: Update packages
       env:
         SCKEY: ${{ secrets.ACTIONS_TRIGGER_PAT }}
@@ -222,7 +228,6 @@ jobs:
         # ========================固件定制部分结束========================
         # 
         
-        unzip -o -q luci-app-turboacc.zip -d ./feeds/luci/applications
         sed -i 's/^[ \t]*//g' ./.config
         make defconfig
 
