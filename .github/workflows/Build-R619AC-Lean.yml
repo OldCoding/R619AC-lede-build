@@ -57,20 +57,20 @@ jobs:
       run: |
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-        mv openwrt/* . && rm -rf openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Cache
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        prefix: ${{ github.workspace }}/
+        prefix: ${{ github.workspace }}/openwrt
 
     - name: Update packages
       env:
         SCKEY: ${{ secrets.ACTIONS_TRIGGER_PAT }}
       run: |
         ls
-        cd package
+        cd openwrt/package
         mkdir openwrt-packages
         cd openwrt-packages
         git clone https://$SCKEY:x-oauth-basic@github.com/OldCoding/luci-app-speedlimit.git
@@ -88,6 +88,7 @@ jobs:
 
     - name: FilePatch
       run: |
+        cd openwrt
         # curl -L https://destan19.github.io/assets/oaf/open_feature/feature-06-18.cfg -o package/openwrt-packages/OpenAppFilter/open-app-filter/files/feature.cfg
         sed -i "s/OpenWrt /Wing build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
         sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
@@ -96,18 +97,19 @@ jobs:
         sed -i '$a src-git helloworld https://github.com/fw876/helloworld' feeds.conf.default
 
     - name: Update feeds
-      run: ./scripts/feeds update -a && ./scripts/feeds install -a
+      run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
 
 
     - name: FilePatch2
       run: |
-        cd ./feeds/luci/applications/luci-app-wrtbwmon
+        cd openwrt/feeds/luci/applications/luci-app-wrtbwmon
         sed -i 's/ selected=\"selected\"//g' ./luasrc/view/wrtbwmon/wrtbwmon.htm && sed -i 's/\"1\"/\"1\" selected=\"selected\"/g' ./luasrc/view/wrtbwmon/wrtbwmon.htm
         sed -i 's/interval: 5/interval: 1/g' ./htdocs/luci-static/wrtbwmon/wrtbwmon.js
 
 
     - name: Generate configuration file
       run: |
+        cd openwrt
         rm -f ./.config*
         touch ./.config
 
@@ -241,6 +243,7 @@ jobs:
     - name: Download package
       id: package
       run: |
+        cd openwrt
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
@@ -248,6 +251,7 @@ jobs:
     - name: Compile the firmware
       id: compile
       run: |
+        cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
         echo "::set-output name=status::success"
@@ -264,13 +268,13 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: bin
+        path: openwrt/bin
 
     - name: Organize files
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
-        cd bin/targets/*/*
+        cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
