@@ -81,13 +81,11 @@ jobs:
         git clone -b lede https://github.com/pymumu/luci-app-smartdns
         git clone https://github.com/destan19/OpenAppFilter.git
         svn export https://github.com/immortalwrt/packages/trunk/net/smartdns
-        #svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
-        #svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
+        #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
+        #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
         #svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
-        # git clone --depth 1 https://github.com/QiuSimons/openwrt-mos && mv -n openwrt-mos/*mosdns ./ ; rm -rf openwrt-mos
         git clone https://github.com/xiaorouji/openwrt-passwall
-        svn export https://github.com/kenzok8/small-package/trunk/luci-app-passwall
-        #svn export https://github.com/xiaorouji/openwrt-passwall2/trunk/luci-app-passwall2
+        git clone -b luci https://github.com/xiaorouji/openwrt-passwall passwall1 && mv -n passwall1/luci-app-passwall  ./; rm -rf passwall1
 
     - name: FilePatch
       run: |
