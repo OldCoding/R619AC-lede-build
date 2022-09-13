@@ -191,7 +191,7 @@ jobs:
         CONFIG_PACKAGE_luci-app-pptp-server=y
         CONFIG_PACKAGE_luci-app-smartdns=y
         CONFIG_PACKAGE_luci-app-oaf=y
-        CONFIG_PACKAGE_luci-app-samba=y
+        CONFIG_PACKAGE_luci-app-samba4=y
         CONFIG_PACKAGE_luci-app-ttyd=y
         CONFIG_PACKAGE_luci-app-webadmin=y
         CONFIG_PACKAGE_luci-app-wol=y
@@ -218,6 +218,8 @@ jobs:
         cat >> .config <<EOF
         CONFIG_DEFAULT_coremark=y
         CONFIG_PACKAGE_e2fsprogs=y
+        CONFIG_PACKAGE_samba4-libs=y
+        CONFIG_PACKAGE_samba4-server=y
         # CONFIG_PACKAGE_odhcpd is not set
         EOF
 
