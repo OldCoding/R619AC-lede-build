@@ -86,6 +86,7 @@ jobs:
         #svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
         git clone https://github.com/xiaorouji/openwrt-passwall
         git clone -b luci https://github.com/xiaorouji/openwrt-passwall passwall1 && mv -n passwall1/luci-app-passwall  ./; rm -rf passwall1
+        svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-diskman
         #svn export https://github.com/xiaorouji/openwrt-passwall2/trunk/luci-app-passwall2
 
     - name: FilePatch
@@ -179,6 +180,7 @@ jobs:
         cat >> .config <<EOF
         CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
         CONFIG_PACKAGE_luci-app-passwall=y
+        CONFIG_PACKAGE_luci-app-diskman=y
         CONFIG_PACKAGE_luci-app-autoreboot=y
         CONFIG_PACKAGE_luci-app-ddns=y
         CONFIG_PACKAGE_luci-app-filetransfer=y
