@@ -223,7 +223,8 @@ jobs:
         CONFIG_PACKAGE_samba4-libs=y
         CONFIG_PACKAGE_samba4-server=y
         # CONFIG_PACKAGE_odhcpd is not set
-        # CONFIG_luci-app-samba is net
+        # CONFIG_luci-app-samba is net set
+        # CONFIG_PACKAGE_luci-app-unblockmusic is net set
         EOF
 
         # 取消编译VMware镜像以及镜像填充 (不要删除被缩进的注释符号):
