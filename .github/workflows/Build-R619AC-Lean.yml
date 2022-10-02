@@ -93,6 +93,7 @@ jobs:
         sed -i "s/OpenWrt /Wing build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
         sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
         sed -i "/firewall\.user/d" package/lean/default-settings/files/zzz-default-settings
+        sed -i 's/\):gsub\(" ", "_"//g' package/openwrt-packages/luci-app-passwall2/root/usr/share/passwall2/subscribe.lua
         sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
         sed -i '$a src-git helloworld https://github.com/fw876/helloworld' feeds.conf.default
 
