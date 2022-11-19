@@ -8,7 +8,7 @@ require 'luci.model.uci'
 require 'luci.util'
 require 'luci.jsonc'
 require 'luci.sys'
-local appname = 'passwall2'
+local appname = 'passwall'
 local api = require ("luci.model.cbi." .. appname .. ".api.api")
 local datatypes = require "luci.cbi.datatypes"
 
@@ -23,10 +23,13 @@ uci:revert(appname)
 
 local has_ss = api.is_finded("ss-redir")
 local has_ss_rust = api.is_finded("sslocal")
+local has_trojan_plus = api.is_finded("trojan-plus")
 local has_v2ray = api.is_finded("v2ray")
 local has_xray = api.is_finded("xray")
-local allowInsecure_default = true
+local has_trojan_go = api.is_finded("trojan-go")
+local allowInsecure_default = nil
 local ss_aead_type_default = uci:get(appname, "@global_subscribe[0]", "ss_aead_type") or "shadowsocks-libev"
+local trojan_type_default = uci:get(appname, "@global_subscribe[0]", "trojan_type") or "trojan-plus"
 -- 判断是否过滤节点关键字
 local filter_keyword_mode_default = uci:get(appname, "@global_subscribe[0]", "filter_keyword_mode") or "0"
 local filter_keyword_discard_list_default = uci:get(appname, "@global_subscribe[0]", "filter_discard_list") or {}
@@ -95,14 +98,15 @@ end
 -- 获取各项动态配置的当前服务器，可以用 get 和 set， get必须要获取到节点表
 local CONFIG = {}
 do
-	if true then
+	local function import_config(protocol)
+		local name = string.upper(protocol)
 		local szType = "@global[0]"
-		local option = "node"
+		local option = protocol .. "_node"
 		
 		local node_id = uci:get(appname, szType, option)
 		CONFIG[#CONFIG + 1] = {
 			log = true,
-			remarks = "节点",
+			remarks = name .. "节点",
 			currentNode = node_id and uci:get_all(appname, node_id) or nil,
 			set = function(o, server)
 				uci:set(appname, szType, option, server)
@@ -110,6 +114,8 @@ do
 			end
 		}
 	end
+	import_config("tcp")
+	import_config("udp")
 
 	if true then
 		local i = 0
@@ -132,14 +138,14 @@ do
 
 	if true then
 		local i = 0
-		uci:foreach(appname, "acl_rule", function(t)
+		local option = "lbss"
+		uci:foreach(appname, "haproxy_config", function(t)
 			i = i + 1
-			local option = "node"
 			local node_id = t[option]
 			CONFIG[#CONFIG + 1] = {
 				log = true,
 				id = t[".name"],
-				remarks = "访问控制列表[" .. i .. "]",
+				remarks = "HAProxy负载均衡节点列表[" .. i .. "]",
 				currentNode = node_id and uci:get_all(appname, node_id) or nil,
 				set = function(o, server)
 					uci:set(appname, t[".name"], option, server)
@@ -149,11 +155,33 @@ do
 		end)
 	end
 
-	local node_table = uci:get(appname, "@auto_switch[0]", "node")
-	if node_table then
+	if true then
+		local i = 0
+		local options = {"tcp", "udp"}
+		uci:foreach(appname, "acl_rule", function(t)
+			i = i + 1
+			for index, value in ipairs(options) do
+				local option = value .. "_node"
+				local node_id = t[option]
+				CONFIG[#CONFIG + 1] = {
+					log = true,
+					id = t[".name"],
+					remarks = "访问控制列表[" .. i .. "]",
+					currentNode = node_id and uci:get_all(appname, node_id) or nil,
+					set = function(o, server)
+						uci:set(appname, t[".name"], option, server)
+						o.newNodeId = server
+					end
+				}
+			end
+		end)
+	end
+
+	local tcp_node_table = uci:get(appname, "@auto_switch[0]", "tcp_node")
+	if tcp_node_table then
 		local nodes = {}
 		local new_nodes = {}
-		for k,node_id in ipairs(node_table) do
+		for k,node_id in ipairs(tcp_node_table) do
 			if node_id then
 				local currentNode = uci:get_all(appname, node_id) or nil
 				if currentNode then
@@ -162,11 +190,11 @@ do
 					end
 					nodes[#nodes + 1] = {
 						log = true,
-						remarks = "备用节点的列表[" .. k .. "]",
+						remarks = "TCP备用节点的列表[" .. k .. "]",
 						currentNode = currentNode,
 						set = function(o, server)
 							for kk, vv in pairs(CONFIG) do
-								if (vv.remarks == "备用节点的列表") then
+								if (vv.remarks == "TCP备用节点的列表") then
 									table.insert(vv.new_nodes, server)
 								end
 							end
@@ -176,14 +204,14 @@ do
 			end
 		end
 		CONFIG[#CONFIG + 1] = {
-			remarks = "备用节点的列表",
+			remarks = "TCP备用节点的列表",
 			nodes = nodes,
 			new_nodes = new_nodes,
 			set = function(o)
 				for kk, vv in pairs(CONFIG) do
-					if (vv.remarks == "备用节点的列表") then
-						--log("刷新自动切换的备用节点的列表")
-						uci:set_list(appname, "@auto_switch[0]", "node", vv.new_nodes)
+					if (vv.remarks == "TCP备用节点的列表") then
+						--log("刷新自动切换的TCP备用节点的列表")
+						uci:set_list(appname, "@auto_switch[0]", "tcp_node", vv.new_nodes)
 					end
 				end
 			end
@@ -354,8 +382,9 @@ local function processData(szType, content, add_mode, add_from)
 		result.remarks = base64Decode(params.remarks)
 	elseif szType == 'vmess' then
 		local info = jsonParse(content)
-		result.type = 'V2ray'
-		if has_xray then
+		if has_v2ray then
+			result.type = 'V2ray'
+		elseif has_xray then
 			result.type = 'Xray'
 		end
 		result.address = info.add
@@ -391,6 +420,7 @@ local function processData(szType, content, add_mode, add_from)
 			result.mkcp_downlinkCapacity = 20
 			result.mkcp_readBufferSize = 2
 			result.mkcp_writeBufferSize = 2
+			result.mkcp_seed = info.seed
 		end
 		if info.net == 'quic' then
 			result.quic_guise = info.type
@@ -495,6 +525,21 @@ local function processData(szType, content, add_mode, add_from)
 				end
 			end
 		end
+		local aead2022 = false
+		for k, v in ipairs({"2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm", "2022-blake3-chacha8-poly1305", "2022-blake3-chacha20-poly1305"}) do
+			if method:lower() == v:lower() then
+				aead2022 = true
+			end
+		end
+		if aead2022 then
+			if ss_aead_type_default == "xray" and has_xray and not result.plugin then
+				result.type = 'Xray'
+				result.protocol = 'shadowsocks'
+				result.transport = 'tcp'
+			elseif has_ss_rust then
+				result.type = 'SS-Rust'
+			end
+		end
 	elseif szType == "trojan" then
 		local alias = ""
 		if content:find("#") then
@@ -503,11 +548,7 @@ local function processData(szType, content, add_mode, add_from)
 			content = content:sub(0, idx_sp - 1)
 		end
 		result.remarks = UrlDecode(alias)
-		result.type = 'V2ray'
-		if has_xray then
-			result.type = 'Xray'
-		end
-		result.protocol = 'trojan'
+		result.type = "Trojan-Plus"
 		if content:find("@") then
 			local Info = split(content, "@")
 			result.password = UrlDecode(Info[1])
@@ -530,15 +571,11 @@ local function processData(szType, content, add_mode, add_from)
 				result.address = hostInfo and hostInfo[1] or Info[2]
 			end
 			local peer, sni = nil, ""
-			local allowInsecure = allowInsecure_default
 			local query = split(Info[2], "?")
 			local params = {}
 			for _, v in pairs(split(query[2], '&')) do
 				local t = split(v, '=')
 				params[string.lower(t[1])] = UrlDecode(t[2])
-			end
-			if params.allowinsecure then
-				allowInsecure = params.allowinsecure
 			end
 			if params.peer then peer = params.peer end
 			sni = params.sni and params.sni or ""
@@ -548,10 +585,99 @@ local function processData(szType, content, add_mode, add_from)
 				if params.wspath then result.ws_path = params.wspath end
 				if sni == "" and params.wshost then sni = params.wshost end
 			end
+			if params.ss and params.ss == "1" then
+				result.ss_aead = "1"
+				if params.ssmethod then result.ss_aead_method = string.lower(params.ssmethod) end
+				if params.sspasswd then result.ss_aead_pwd = params.sspasswd end
+			end
 			result.port = port
+			if result.trojan_transport == "ws" or result.ss_aead then
+				result.type = "Trojan-Go"
+				result.fingerprint = "firefox"
+				result.mux = "1"
+			end
 			result.tls = '1'
 			result.tls_serverName = peer and peer or sni
-			result.tls_allowInsecure = allowInsecure and "1" or "0"
+			if params.allowinsecure then
+				if params.allowinsecure == "1" or params.allowinsecure == "0" then
+					result.tls_allowInsecure = params.allowinsecure
+				else
+					result.tls_allowInsecure = string.lower(params.allowinsecure) == "true" and "1" or "0"
+				end
+				log(result.remarks .. ' 使用节点AllowInsecure设定: '.. result.tls_allowInsecure)
+			else
+				result.tls_allowInsecure = allowInsecure_default and "1" or "0"
+			end
+		end
+		if trojan_type_default == "trojan-plus" and has_trojan_plus then
+			result.type = "Trojan-Plus"
+		elseif trojan_type_default == "v2ray" and has_v2ray then
+			result.type = 'V2ray'
+			result.protocol = 'trojan'
+		elseif trojan_type_default == "xray" and has_xray then
+			result.type = 'Xray'
+			result.protocol = 'trojan'
+		elseif trojan_type_default == "trojan-go" and has_trojan_go then
+			result.type = 'Trojan-Go'
+		end
+	elseif szType == "trojan-go" then
+		local alias = ""
+		if content:find("#") then
+			local idx_sp = content:find("#")
+			alias = content:sub(idx_sp + 1, -1)
+			content = content:sub(0, idx_sp - 1)
+		end
+		result.remarks = UrlDecode(alias)
+		if has_trojan_go then
+			result.type = "Trojan-Go"
+		end
+		if content:find("@") then
+			local Info = split(content, "@")
+			result.password = UrlDecode(Info[1])
+			local port = "443"
+			Info[2] = (Info[2] or ""):gsub("/%?", "?")
+			local hostInfo = nil
+			if Info[2]:find(":") then
+				hostInfo = split(Info[2], ":")
+				result.address = hostInfo[1]
+				local idx_port = 2
+				if hostInfo[2]:find("?") then
+					hostInfo = split(hostInfo[2], "?")
+					idx_port = 1
+				end
+				if hostInfo[idx_port] ~= "" then port = hostInfo[idx_port] end
+			else
+				if Info[2]:find("?") then
+					hostInfo = split(Info[2], "?")
+				end
+				result.address = hostInfo and hostInfo[1] or Info[2]
+			end
+			local peer, sni = nil, ""
+			local query = split(Info[2], "?")
+			local params = {}
+			for _, v in pairs(split(query[2], '&')) do
+				local t = split(v, '=')
+				params[string.lower(t[1])] = UrlDecode(t[2])
+			end
+			if params.peer then peer = params.peer end
+			sni = params.sni and params.sni or ""
+			if params.type and params.type == "ws" then
+				result.trojan_transport = "ws"
+				if params.host then result.ws_host = params.host end
+				if params.path then result.ws_path = params.path end
+				if sni == "" and params.host then sni = params.host end
+			end
+			if params.encryption and params.encryption:match('^ss;[^;:]*[;:].*$') then
+				result.ss_aead = "1"
+				result.ss_aead_method, result.ss_aead_pwd = params.encryption:match('^ss;([^;:]*)[;:](.*)$')
+				result.ss_aead_method = string.lower(result.ss_aead_method)
+			end
+			result.port = port
+			result.fingerprint = "firefox"
+			result.tls = "1"
+			result.tls_serverName = peer and peer or sni
+			result.tls_allowInsecure = "0"
+			result.mux = "1"
 		end
 	elseif szType == "ssd" then
 		result.type = "SS"
@@ -564,9 +690,10 @@ local function processData(szType, content, add_mode, add_from)
 		result.group = content.airport
 		result.remarks = content.remarks
 	elseif szType == "vless" then
-		result.type = 'V2ray'
 		if has_xray then
 			result.type = 'Xray'
+		elseif has_v2ray then
+			result.type = 'V2ray'
 		end
 		result.protocol = "vless"
 		local alias = ""
@@ -628,6 +755,7 @@ local function processData(szType, content, add_mode, add_from)
 				result.mkcp_downlinkCapacity = 20
 				result.mkcp_readBufferSize = 2
 				result.mkcp_writeBufferSize = 2
+				result.mkcp_seed = params.seed
 			end
 			if params.type == 'quic' then
 				result.quic_guise = params.headerType or "none"
@@ -648,6 +776,8 @@ local function processData(szType, content, add_mode, add_from)
 				if params.security == "xtls" then
 					result.xtls = "1"
 					result.flow = params.flow or "xtls-rprx-direct"
+				else
+					result.tlsflow = params.flow or nil
 				end
 				result.tls_serverName = (params.sni and params.sni ~= "") and params.sni or params.host
 			end
@@ -681,8 +811,11 @@ local function processData(szType, content, add_mode, add_from)
 		result.hysteria_auth_type = "string"
 		result.hysteria_auth_password = params.auth
 		result.tls_serverName = params.peer
-		if params.insecure and params.insecure == "1" then
-			result.tls_allowInsecure = "1"
+		if params.insecure and (params.insecure == "1" or params.insecure == "0") then
+			result.tls_allowInsecure = params.insecure
+			log(result.remarks ..' 使用节点AllowInsecure设定: '.. result.tls_allowInsecure)
+		else
+			result.tls_allowInsecure = allowInsecure_default and "1" or "0"
 		end
 		result.hysteria_alpn = params.alpn
 		result.hysteria_up_mbps = params.upmbps
@@ -978,7 +1111,7 @@ local function parse_link(raw, add_mode, add_from)
 					local node = trim(v)
 					local dat = split(node, "://")
 					if dat and dat[1] and dat[2] then
-						if dat[1] == 'ss' or dat[1] == 'trojan' then
+						if dat[1] == 'ss' or dat[1] == 'trojan' or dat[1] == 'trojan-go' then
 							result = processData(dat[1], dat[2], add_mode, add_from)
 						else
 							result = processData(dat[1], base64Decode(dat[2]), add_mode, add_from)
@@ -1032,8 +1165,8 @@ local execute = function()
 			local cfgid = value[".name"]
 			local remark = value.remark
 			local url = value.url
-			if value.allowInsecure and value.allowInsecure ~= "1" then
-				allowInsecure_default = nil
+			if value.allowInsecure and value.allowInsecure == "1" then
+				allowInsecure_default = true
 			end
 			local filter_keyword_mode = value.filter_keyword_mode or "5"
 			if filter_keyword_mode == "0" then
@@ -1057,6 +1190,10 @@ local execute = function()
 			if ss_aead_type ~= "global" then
 				ss_aead_type_default = ss_aead_type
 			end
+			local trojan_type = value.trojan_type or "global"
+			if trojan_type ~= "global" then
+				trojan_type_default = trojan_type
+			end
 			local ua = value.user_agent
 			log('正在订阅:【' .. remark .. '】' .. url)
 			local raw = curl(url, "/tmp/" .. cfgid, ua)
@@ -1070,11 +1207,12 @@ local execute = function()
 			else
 				retry[#retry + 1] = value
 			end
-			allowInsecure_default = true
+			allowInsecure_default = nil
 			filter_keyword_mode_default = uci:get(appname, "@global_subscribe[0]", "filter_keyword_mode") or "0"
 			filter_keyword_discard_list_default = uci:get(appname, "@global_subscribe[0]", "filter_discard_list") or {}
 			filter_keyword_keep_list_default = uci:get(appname, "@global_subscribe[0]", "filter_keep_list") or {}
 			ss_aead_type_default = uci:get(appname, "@global_subscribe[0]", "ss_aead_type") or "shadowsocks-libev"
+			trojan_type_default = uci:get(appname, "@global_subscribe[0]", "trojan_type") or "trojan-plus"
 		end
 
 		if #retry > 0 then
