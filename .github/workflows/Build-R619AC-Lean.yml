@@ -89,7 +89,7 @@ jobs:
 
     - name: FilePatch
       run: |
-        cp -f patch/subscribe.lua openwrt/package/openwrt-packages/luci-app-passwall/root/usr/share/passwall/subscribe.lua
+        # cp -f patch/subscribe.lua openwrt/package/openwrt-packages/luci-app-passwall/root/usr/share/passwall/subscribe.lua
         cd openwrt
         sed -i "s/OpenWrt /Wing build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
         sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
