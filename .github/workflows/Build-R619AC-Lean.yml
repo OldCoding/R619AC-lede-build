@@ -74,9 +74,7 @@ jobs:
         cd openwrt/package
         mkdir openwrt-packages
         cd openwrt-packages
-        git clone https://$SCKEY:x-oauth-basic@github.com/OldCoding/luci-app-speedlimit.git
         git clone https://github.com/tty228/luci-app-serverchan
-        git clone https://github.com/kongfl888/luci-app-adguardhome
         git clone -b lede https://github.com/pymumu/luci-app-smartdns
         svn export https://github.com/immortalwrt/packages/trunk/net/smartdns
         #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
@@ -86,6 +84,7 @@ jobs:
         git clone https://github.com/sbwml/luci-app-alist
         git clone -b luci https://github.com/xiaorouji/openwrt-passwall passwall1 && mv -n passwall1/luci-app-passwall  ./; rm -rf passwall1
         svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-diskman
+        svn export https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-adguardhome
         #svn export https://github.com/xiaorouji/openwrt-passwall2/trunk/luci-app-passwall2
 
     - name: FilePatch
@@ -279,10 +278,21 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
-        cd openwrt/bin/targets/*/*
+        cd $GITHUB_WORKSPACE/openwrt/bin/packages
+        tar -zcvf Packages.tar.gz ./*
+        cp Packages.tar.gz $GITHUB_WORKSPACE/openwrt/bin/targets/*/*
+        cd $GITHUB_WORKSPACE/openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
+        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+
+    - name: Calculate MD5
+      run: |
+        cp $GITHUB_WORKSPACE/openwrt/bin/targets/*/*/Packages.tar.gz ${{ env.FIRMWARE }}/
+        cd ${{ env.FIRMWARE }}/* && rm -rf sha256sums
+        MD5=$(md5sum * | sed ':a;N;$!ba;s/\n/<br>/g')
+        echo "MD5=$MD5" >> $GITHUB_ENV
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
@@ -291,43 +301,28 @@ jobs:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    - name: Upload firmware to cowtransfer
-      id: cowtransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-
-    - name: Upload firmware to WeTransfer
-      id: wetransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-
-    - name: Generate release tag
-      id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      run: |
-        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
-        touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-        echo "::set-output name=status::success"
-
-    - name: Upload firmware to release
-      uses: softprops/action-gh-release@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload OpenWrt Firmware to Release
+      id: release
+      uses: ncipollo/release-action@v1
+      if: env.PACKAGED_STATUS == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        name: R${{ env.DATE }} for R619AC
+        allowUpdates: true
+        removeArtifacts: true
+        tag: ${{ env.release_tag }}
+        commit: main
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: ${{ env.FIRMWARE }}/*
+        body: |
+          - 版本号：${{ env.VER }}
+          - 默认IP：192.168.10.1
+          - 默认密码：password
+          - 当前使用版本:【编译前的最后一次[➦主源码](https://github.com/coolsnowwolf/lede)更新记录】
+          - 下载后请仔细校验MD5，如不正确请重新下载
+          ${{ env.useVersionInfo }}
+          
+          `md5sum`
+          > ${{ env.MD5 }}
 
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
