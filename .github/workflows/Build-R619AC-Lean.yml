@@ -309,7 +309,7 @@ jobs:
         name: R${{ env.DATE }} for R619AC
         allowUpdates: true
         removeArtifacts: true
-        tag: ${{ env.release_tag }}
+        tag: ${{ steps.organize.outputs.release_tag }}
         commit: main
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: ${{ env.FIRMWARE }}/*
