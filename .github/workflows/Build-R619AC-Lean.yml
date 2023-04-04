@@ -289,7 +289,6 @@ jobs:
 
     - name: Calculate MD5
       run: |
-        cp $GITHUB_WORKSPACE/openwrt/bin/targets/*/*/Packages.tar.gz ${{ env.FIRMWARE }}/
         cd ${{ env.FIRMWARE }}/* && rm -rf sha256sums
         MD5=$(md5sum * | sed ':a;N;$!ba;s/\n/<br>/g')
         echo "MD5=$MD5" >> $GITHUB_ENV
