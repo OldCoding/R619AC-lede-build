@@ -26,8 +26,6 @@ env:
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: false
-  UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
@@ -49,6 +47,7 @@ jobs:
         sudo -E apt-get -qq install $(curl -fsSL https://is.gd/depends_ubuntu_2204)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
+        sudo -E apt-get -qq install libfuse-dev
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
@@ -103,6 +102,8 @@ jobs:
 
     - name: FilePatch2
       run: |
+        rm -rf feeds/packages/lang/golang
+        svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
         cd openwrt/feeds/luci/applications/luci-app-wrtbwmon
         sed -i 's/ selected=\"selected\"//g' ./luasrc/view/wrtbwmon/wrtbwmon.htm && sed -i 's/\"1\"/\"1\" selected=\"selected\"/g' ./luasrc/view/wrtbwmon/wrtbwmon.htm
         sed -i 's/interval: 5/interval: 1/g' ./htdocs/luci-static/wrtbwmon/wrtbwmon.js
@@ -303,7 +304,7 @@ jobs:
     - name: Upload OpenWrt Firmware to Release
       id: release
       uses: ncipollo/release-action@v1
-      if: env.PACKAGED_STATUS == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         name: R${{ env.DATE }} for R619AC
         allowUpdates: true
