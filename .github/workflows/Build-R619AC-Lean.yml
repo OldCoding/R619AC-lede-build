@@ -58,6 +58,10 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        useVersionInfo=$(git show -s --date=short --format="Author: %an<br/>date: %cd<br/>commit: %s<br/>commit hash: %H<br/>")
+        VER=$(grep -E "='R.+" ./package/lean/default-settings/files/zzz-default-settings | cut -f2 -d"'")
+        echo "useVersionInfo=$useVersionInfo" >> $GITHUB_ENV
+        echo "VER=$VER" >> $GITHUB_ENV
 
     - name: Cache
       uses: klever1988/cachewrtbuild@main
@@ -290,7 +294,7 @@ jobs:
 
     - name: Calculate MD5
       run: |
-        cd ${{ env.FIRMWARE }}/* && rm -rf sha256sums
+        cd ${{ env.FIRMWARE }} && rm -rf sha256sums
         MD5=$(md5sum * | sed ':a;N;$!ba;s/\n/<br>/g')
         echo "MD5=$MD5" >> $GITHUB_ENV
 
