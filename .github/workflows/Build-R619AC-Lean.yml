@@ -105,16 +105,15 @@ jobs:
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
 
-
     - name: FilePatch2
       run: |
+        cd openwrt
         rm -rf feeds/packages/lang/golang
         svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
-        sed -i 's/[b|B]ootstrap/design/g' /feeds/luci/collections/luci/Makefile
-        cd openwrt/feeds/luci/applications/luci-app-wrtbwmon
+        sed -i 's/[b|B]ootstrap/design/g' ./feeds/luci/collections/luci/Makefile
+        cd feeds/luci/applications/luci-app-wrtbwmon
         sed -i 's/ selected=\"selected\"//g' ./luasrc/view/wrtbwmon/wrtbwmon.htm && sed -i 's/\"1\"/\"1\" selected=\"selected\"/g' ./luasrc/view/wrtbwmon/wrtbwmon.htm
         sed -i 's/interval: 5/interval: 1/g' ./htdocs/luci-static/wrtbwmon/wrtbwmon.js
-
 
     - name: Generate configuration file
       run: |
