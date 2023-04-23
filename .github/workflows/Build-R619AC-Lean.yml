@@ -158,6 +158,7 @@ jobs:
         cat >> .config <<EOF
         CONFIG_TARGET_ipq40xx=y
         CONFIG_TARGET_ipq40xx_DEVICE_p2w_r619ac-128m=y
+        CONFIG_LINUX_5_10=y
         EOF
 
         # USB2.0支持:
