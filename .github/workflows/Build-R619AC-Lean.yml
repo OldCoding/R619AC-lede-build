@@ -96,9 +96,6 @@ jobs:
     - name: FilePatch
       run: |
         cp -f patch/rc.local openwrt/package/base-files/files/etc/rc.local
-        cp -f patch/21_adjust_network openwrt/target/linux/ipq40xx/base-files/etc/hotplug.d/net/21_adjust_network
-        cp -f patch/adjust_network openwrt/target/linux/ipq40xx/base-files/etc/init.d/adjust_network
-        cp -f patch/adjust_network.sh openwrt/target/linux/ipq40xx/base-files/lib/adjust_network.sh
         cd openwrt
         sed -i "s/OpenWrt /Wing build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
         sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
