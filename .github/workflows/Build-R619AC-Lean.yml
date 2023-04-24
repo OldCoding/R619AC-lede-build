@@ -158,7 +158,6 @@ jobs:
         cat >> .config <<EOF
         CONFIG_TARGET_ipq40xx=y
         CONFIG_TARGET_ipq40xx_DEVICE_p2w_r619ac-128m=y
-        CONFIG_LINUX_5_10=y
         EOF
 
         # USB2.0支持:
@@ -216,9 +215,6 @@ jobs:
 
         # LuCI主题:
         cat >> .config <<EOF
-        CONFIG_PACKAGE_luci-theme-argon=y
-        CONFIG_PACKAGE_luci-theme-bootstrap=y
-        CONFIG_PACKAGE_luci-theme-material=y
         CONFIG_PACKAGE_luci-theme-design=y
         EOF
 
