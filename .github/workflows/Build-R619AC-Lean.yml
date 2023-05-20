@@ -106,7 +106,7 @@ jobs:
         curl -sfL -o ./GeoSite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat
         curl -sfL -o ./GeoIP.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat
         mkdir -p ./core && cd ./core
-        curl -sL -m 30 --retry 2 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-armv7.tar.gz
+        curl -sfL -o ./dev.tar.gz https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-armv7.tar.gz
         tar zxvf *.tar.gz && rm -rf *.tar.gz && chmod +x ./clash
 
     - name: Update feeds
