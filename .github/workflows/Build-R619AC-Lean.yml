@@ -101,7 +101,11 @@ jobs:
         sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
         sed -i "/firewall\.user/d" package/lean/default-settings/files/zzz-default-settings
         sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
-        cd ./package/openwrt-packages/luci-app-openclash/root/usr/share/openclash && mkdir -p ./core && cd ./core
+        cd ./package/openwrt-packages/luci-app-openclash/root/usr/share/openclash
+        curl -sfL -o ./Country.mmdb https://github.com/alecthw/mmdb_china_ip_list/raw/release/lite/Country.mmdb
+        curl -sfL -o ./GeoSite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat
+        curl -sfL -o ./GeoIP.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat
+        mkdir -p ./core && cd ./core
         curl -sL -m 30 --retry 2 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-amd64.tar.gz
         tar zxvf *.tar.gz && rm -rf *.tar.gz && chmod +x ./clash
 
