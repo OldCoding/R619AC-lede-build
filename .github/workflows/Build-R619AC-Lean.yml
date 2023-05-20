@@ -101,12 +101,9 @@ jobs:
         sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
         sed -i "/firewall\.user/d" package/lean/default-settings/files/zzz-default-settings
         sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
-        curl -sL -m 30 --retry 2 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-amd64.tar.gz -o /tmp/clash.tar.gz
-        tar zxvf /tmp/clash.tar.gz -C /tmp >/dev/null 2>&1
-        chmod +x /tmp/clash >/dev/null 2>&1
-        mkdir -p ./package/luci-app-openclash/root/usr/share/openclash/core
-        mv /tmp/clash ./package/luci-app-openclash/root/usr/share/openclash/core/clash >/dev/null 2>&1
-        rm -rf /tmp/clash.tar.gz >/dev/null 2>&1
+        cd ./package/openwrt-packages/luci-app-openclash/root/usr/share/openclash && mkdir -p ./core && cd ./core
+        curl -sL -m 30 --retry 2 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-amd64.tar.gz
+        tar zxvf *.tar.gz && rm -rf *.tar.gz && chmod +x ./clash
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
