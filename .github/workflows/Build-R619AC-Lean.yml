@@ -85,7 +85,7 @@ jobs:
         git clone https://github.com/gngpp/luci-theme-design
         #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
         #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
-        #svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
+        svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
         git clone https://github.com/xiaorouji/openwrt-passwall
         git clone https://github.com/sbwml/luci-app-alist
         git clone -b luci https://github.com/xiaorouji/openwrt-passwall passwall1 && mv -n passwall1/luci-app-passwall  ./; rm -rf passwall1
@@ -93,7 +93,7 @@ jobs:
         svn export https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-adguardhome
         #svn export https://github.com/xiaorouji/openwrt-passwall2/trunk/luci-app-passwall2
 
-    - name: FilePatch
+    - name: File Patch Before
       run: |
         cp -f patch/rc.local openwrt/package/base-files/files/etc/rc.local
         cd openwrt
@@ -101,16 +101,23 @@ jobs:
         sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
         sed -i "/firewall\.user/d" package/lean/default-settings/files/zzz-default-settings
         sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
+        curl -sL -m 30 --retry 2 https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-amd64.tar.gz -o /tmp/clash.tar.gz
+        tar zxvf /tmp/clash.tar.gz -C /tmp >/dev/null 2>&1
+        chmod +x /tmp/clash >/dev/null 2>&1
+        mkdir -p ./package/luci-app-openclash/root/usr/share/openclash/core
+        mv /tmp/clash ./package/luci-app-openclash/root/usr/share/openclash/core/clash >/dev/null 2>&1
+        rm -rf /tmp/clash.tar.gz >/dev/null 2>&1
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
 
-    - name: FilePatch2
+    - name: File Patch After
       run: |
         cd openwrt
         rm -rf feeds/packages/lang/golang
         svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
-        sed -i 's/[b|B]ootstrap/design/g' ./feeds/luci/collections/luci/Makefile
+        rm -rf feeds/luci/themes/luci-theme-argon
+        git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git ./feeds/luci/themes/luci-theme-argon
         cd feeds/luci/applications/luci-app-wrtbwmon
         sed -i 's/ selected=\"selected\"//g' ./luasrc/view/wrtbwmon/wrtbwmon.htm && sed -i 's/\"1\"/\"1\" selected=\"selected\"/g' ./luasrc/view/wrtbwmon/wrtbwmon.htm
         sed -i 's/interval: 5/interval: 1/g' ./htdocs/luci-static/wrtbwmon/wrtbwmon.js
@@ -208,11 +215,13 @@ jobs:
         CONFIG_PACKAGE_luci-app-vlmcsd=y
         CONFIG_PACKAGE_luci-app-zerotier=y
         CONFIG_PACKAGE_luci-app-adguardhome=y
+        CONFIG_PACKAGE_luci-app-openclash=y
         CONFIG_PACKAGE_luci-app-sqm=y
         EOF
 
         # LuCI主题:
         cat >> .config <<EOF
+        CONFIG_PACKAGE_luci-theme-argon=y
         CONFIG_PACKAGE_luci-theme-design=y
         EOF
 
