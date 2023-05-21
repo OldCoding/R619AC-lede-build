@@ -74,7 +74,6 @@ jobs:
       env:
         SCKEY: ${{ secrets.ACTIONS_TRIGGER_PAT }}
       run: |
-        ls
         cd openwrt/package
         mkdir openwrt-packages
         cd openwrt-packages
@@ -110,10 +109,11 @@ jobs:
         mkdir -p ./core && cd ./core
         curl -sfL -o ./dev.tar.gz https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-armv7.tar.gz
         tar zxvf *.tar.gz && rm -rf *.tar.gz && chmod +x ./clash
-        ls
-        cd $DIR
-        ls
-
+        cd $DIR/luci-app-adguardhome/root/usr && mkdir ./bin/AdGuardHome && cd ./bin/AdGuardHome
+        ADG_VER=$(wget-ssl -q -O - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases  2>/dev/null | grep 'tag_name' | egrep -o "v[0-9].+[0-9.]" | awk 'NR==1')
+        curl -sfL -o /tmp/AdGuardHome_linux_armv7.tar.gz https://github.com/AdguardTeam/AdGuardHome/releases/download/"$ADG_VER"/AdGuardHome_linux_armv7.tar.gz
+        tar -zxf /tmp/*.tar.gz -C /tmp/ && chmod +x /tmp/AdGuardHome/AdGuardHome
+        mv /tmp/AdGuardHome/AdGuardHome ./ && rm -rf /tmp/AdGuardHome && ls
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
