@@ -108,10 +108,9 @@ jobs:
         curl -sfL -o ./GeoIP.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat
         mkdir -p ./core && cd ./core
         curl -sfL -o ./dev.tar.gz https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-armv7.tar.gz
-        tar zxvf *.tar.gz && rm -rf *.tar.gz && chmod +x ./clash
-        cd $DIR/luci-app-adguardhome/root/usr && pwd
-        mkdir -p ./bin && cd ./bin && pwd
-        mkdir -p ./AdGuardHome && cd ./AdGuardHome && pwd
+        tar zxf *.tar.gz && rm -rf *.tar.gz && chmod +x ./clash
+        cd $DIR/luci-app-adguardhome/root/usr && mkdir -p ./bin/AdGuardHome && cd ./bin/AdGuardHome && pwd
+        wget-ssl -q -O - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases | grep 'tag_name'
         wget-ssl -q -O - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases 2>/dev/null | grep 'tag_name' | egrep -o "v[0-9].+[0-9.]" | awk 'NR==1'
         ADG_VER=$(wget-ssl -q -O - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases 2>/dev/null | grep 'tag_name' | egrep -o "v[0-9].+[0-9.]" | awk 'NR==1')
         echo $ADG_VER
