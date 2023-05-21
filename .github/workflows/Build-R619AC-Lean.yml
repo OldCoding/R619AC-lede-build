@@ -101,19 +101,20 @@ jobs:
         sed '6 iuci\ set\ system.@system[0].hostname=G-Dock' -i package/lean/default-settings/files/zzz-default-settings
         sed -i "/firewall\.user/d" package/lean/default-settings/files/zzz-default-settings
         sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate
-        cd ./package/openwrt-packages/luci-app-openclash/root/etc/openclash
+        cd ./package/openwrt-packages
+        ADG_VER=$(wget-ssl -q -O - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases  2>/dev/null | grep 'tag_name' | egrep -o "v[0-9].+[0-9.]" | awk 'NR==1')
+        curl -sfL -o /tmp/adg.tar.gz https://github.com/AdguardTeam/AdGuardHome/releases/download/"$ADG_VER"/AdGuardHome_linux_armv7.tar.gz
+        tar -zxvf /tmp/adg.tar.gz -C /tmp/AdGuardHome_Update/ && chmod +x /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome
+        mkdir ./luci-app-adguardhome/root/user/bin/AdGuardHome
+        mv /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome ./luci-app-adguardhome/root/user/bin/AdGuardHome/
+        ls ./luci-app-adguardhome/root/user/bin/AdGuardHome/
+        cd ./luci-app-openclash/root/etc/openclash
         curl -sfL -o ./Country.mmdb https://github.com/alecthw/mmdb_china_ip_list/raw/release/lite/Country.mmdb
         curl -sfL -o ./GeoSite.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geosite.dat
         curl -sfL -o ./GeoIP.dat https://github.com/Loyalsoldier/v2ray-rules-dat/raw/release/geoip.dat
         mkdir -p ./core && cd ./core
         curl -sfL -o ./dev.tar.gz https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-armv7.tar.gz
         tar zxvf *.tar.gz && rm -rf *.tar.gz && chmod +x ./clash
-        ADG_VER=$(wget-ssl -q -O - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases  2>/dev/null | grep 'tag_name' | egrep -o "v[0-9].+[0-9.]" | awk 'NR==1')
-        curl -sfL -o /tmp/adg.tar.gz https://github.com/AdguardTeam/AdGuardHome/releases/download/"$ADG_VER"/AdGuardHome_linux_armv7.tar.gz
-        tar -zxf /tmp/adg.tar.gz -C /tmp/AdGuardHome_Update/ && chmod +x /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome
-        cd ../../../../../ && ls
-        cd ./luci-app-adguardhome/root/user && mkdir ./bin/AdGuardHome/AdGuardHome cd ./bin/AdGuardHome/AdGuardHome
-        mv /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome ./ && rm -rf /tmp/AdGuardHome_Update
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
