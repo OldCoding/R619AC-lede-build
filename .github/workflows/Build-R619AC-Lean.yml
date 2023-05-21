@@ -64,11 +64,11 @@ jobs:
         echo "useVersionInfo=$useVersionInfo" >> $GITHUB_ENV
         echo "VER=$VER" >> $GITHUB_ENV
 
-    - name: Cache
-      uses: klever1988/cachewrtbuild@main
-      with:
-        ccache: 'true'
-        prefix: ${{ github.workspace }}/openwrt
+    #- name: Cache
+    #  uses: klever1988/cachewrtbuild@main
+    #  with:
+    #    ccache: 'true'
+    #    prefix: ${{ github.workspace }}/openwrt
 
     - name: Update packages
       env:
