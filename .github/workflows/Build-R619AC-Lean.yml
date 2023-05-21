@@ -116,7 +116,7 @@ jobs:
         tar -zxf /tmp/adg.tar.gz -C /tmp/AdGuardHome_Update/ && chmod +x /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome
         cd ./luci-app-adguardhome/root/user
         mkdir ./bin/AdGuardHome/AdGuardHome cd ./bin/AdGuardHome/AdGuardHome
-        mv /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome ./ && rm -rf /tmp/AdGuardHome_Update && ls
+        mv /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome ./ && rm -rf /tmp/AdGuardHome_Update
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
