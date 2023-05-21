@@ -115,7 +115,7 @@ jobs:
         curl -sfL -o /tmp/adg.tar.gz https://github.com/AdguardTeam/AdGuardHome/releases/download/"$ADG_VER"/AdGuardHome_linux_armv7.tar.gz
         tar -zxf /tmp/adg.tar.gz -C /tmp/AdGuardHome_Update/ && chmod +x /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome
         cd ./luci-app-adguardhome/root/user
-        mkdir ./bin/AdGuardHome/AdGuardHome cd ./bin/AdGuardHome/AdGuardHome
+        mkdir ./bin/AdGuardHome && cd ./bin/AdGuardHome
         mv /tmp/AdGuardHome_Update/AdGuardHome/AdGuardHome ./ && rm -rf /tmp/AdGuardHome_Update
 
     - name: Update feeds
