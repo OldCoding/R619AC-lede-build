@@ -81,6 +81,7 @@ jobs:
         git clone https://github.com/fw876/helloworld
         git clone -b lede https://github.com/pymumu/luci-app-smartdns
         git clone https://github.com/gngpp/luci-theme-design
+        git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config
         #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
         #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
         svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
@@ -234,6 +235,7 @@ jobs:
         # LuCI主题:
         cat >> .config <<EOF
         CONFIG_PACKAGE_luci-theme-argon=y
+        CONFIG_PACKAGE_luci-app-argon-config=y
         CONFIG_PACKAGE_luci-theme-design=y
         EOF
 
