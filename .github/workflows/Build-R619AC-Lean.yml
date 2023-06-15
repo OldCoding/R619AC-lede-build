@@ -77,13 +77,11 @@ jobs:
         cd openwrt/package
         mkdir openwrt-packages
         cd openwrt-packages
-        git clone https://github.com/tty228/luci-app-serverchan
+        git clone https://github.com/zzsj0928/luci-app-pushbot
         git clone https://github.com/fw876/helloworld
         git clone -b lede https://github.com/pymumu/luci-app-smartdns
         git clone https://github.com/gngpp/luci-theme-design
         git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config
-        #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/aliyundrive-webdav
-        #svn export https://github.com/messense/aliyundrive-webdav/trunk/openwrt/luci-app-aliyundrive-webdav
         svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
         git clone https://github.com/xiaorouji/openwrt-passwall
         git clone https://github.com/sbwml/luci-app-alist
